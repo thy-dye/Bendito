@@ -17,6 +17,7 @@
       ]
     },
     "opengl",
-    "stb"
+    "stb",
+    "assimp"
   ]
 }

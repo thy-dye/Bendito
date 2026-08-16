@@ -21,9 +21,9 @@ RenderContext::~RenderContext()
 Member Functions
 *****************************************************************************/
 
-void RenderContext::addObject(Object& o)
+void RenderContext::addObject(std::unique_ptr<Object> o)
 {
-    objects.push_back(&o);
+    objects.push_back(std::move(o));
 }
 
 /***************** MAIN LOOP *****************/
@@ -70,28 +70,23 @@ void RenderContext::render()
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);  
-
+    //view matrix
+    glm::mat4 view = camera.lookAt();
+    // projections
+    glm::mat4 projection = camera.perspectiveProjection();
+    
     for (int i = 0; i < static_cast<int>(objects.size()); ++i)
     {
-        objects[i]->look->s->use();
-        //i can do this only cus its the only object rn
+    
         //model matrix
         glm::mat4 model = glm::mat4(1.0f);
-        model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
-
-        //view matrix
-        glm::mat4 view = camera.lookAt();
-
-        // projections
-        glm::mat4 projection = camera.perspectiveProjection();
-
-        objects[i]->look->s->setMat4("model", model);
-        objects[i]->look->s->setMat4("view", view);
-        objects[i]->look->s->setMat4("projection", projection);    
         
-        glBindVertexArray(objects[i]->shape->VAO);
-        // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0); //renders using array of indices (EBO)
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+        objects[i]->mat->use();
+
+        objects[i]->mat->s->setMat4("model", model);
+        objects[i]->mat->s->setMat4("view", view);
+        objects[i]->mat->s->setMat4("projection", projection);    
+        objects[i]->Render();
     }
     
     //imgui ui demo
@@ -115,6 +110,7 @@ void RenderContext::render()
     window->swapBuffer();
 }
 //handles the camera movement takes in current camera mode
+//todo make a camera controller class
 void RenderContext::cameraInputs(bool cm) 
 {
     if (cm == FLYMODE) {

@@ -16,6 +16,7 @@ enum ShaderType
     FRAGMENT_SHADER
 };
 
+// todo enable textures
 class Shader 
 {
 public:
@@ -68,3 +69,19 @@ const char *fPath = nullptr;
 };
 
 // for future maybe add opengl 4.3 to add compute shaders and textures support
+
+//todo when i feel like it
+//when adding textures will need to edit the object, texture, and material classes as well
+class texture {
+public:
+  unsigned int id;
+  std::string type;
+};
+
+class Material {
+public:
+    void use() { s->use(); }
+    void disuse() { glUseProgram(0); }
+    std::shared_ptr<Shader> s;
+    //std::shared_ptr<texture> t;   
+};

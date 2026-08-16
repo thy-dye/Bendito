@@ -24,6 +24,7 @@ struct Mouse {
 /*
 Window Class
 Inputs are either Pressed=1, repeated=2, or released=0
+only supports one window at the moment
 */
 class Window {
 public:
@@ -69,15 +70,13 @@ private:
     //static functions for callbacks
     // window size callback
     static void framebufferSizeCallback(GLFWwindow* window, int width, int height);
-
     //keyboard callbacks
     static void processModifiers(GLFWwindow* window, int key, int scancode, int action, int mods);
     static void processKeys(GLFWwindow* window, int key, int scancode, int action, int mods);
-
     //mouse callbacks
     static void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
     static void mouseScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
-    
+
     bool isFocus = false;
     static int inputModifiersEvent;
     // better for larger datasets but worse cache locality
