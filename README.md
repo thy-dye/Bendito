@@ -1,5 +1,4 @@
-# OpenGL-First-Project
-Creating my first self guided OpenGL project, let us see where it goes.
-using vcpkg and CMake will give details how to initialize it later
+# Bendito
 
-basically my magnum opus for junior year
+Hello welcome to my custom engine Bendito.
+The goal of this project was to create a miniture Geometry Processing app mainly inspired from the idea of being able to replicate Blender's modeling capabilities.

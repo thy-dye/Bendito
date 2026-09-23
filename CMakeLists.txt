@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10.0)
-project(OpenGL-First-Project VERSION 0.1.0 LANGUAGES C CXX)
+project(Bendito VERSION 0.1.0 LANGUAGES C CXX)
 
 find_package(glfw3 CONFIG REQUIRED)
 find_package(imgui CONFIG REQUIRED)
@@ -12,11 +12,11 @@ find_package(glm CONFIG REQUIRED)
 add_executable(${CMAKE_PROJECT_NAME} 
 src/main.cpp
 src/window/window.cpp
-src/renderloop/rendercontext.cpp
+src/application/application.cpp
 src/error.cpp
 src/shaders/shader.cpp
 src/camera/camera.cpp
-
+src/geometry/object.cpp
 )
 
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE

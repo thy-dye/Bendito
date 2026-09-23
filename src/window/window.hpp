@@ -28,31 +28,29 @@ only supports one window at the moment
 */
 class Window {
 public:
-    // Constructor   
+    /*** Constructor ***/ 
     Window(int width, int height, int Major=MAJOR, int minor=MINOR);
-    // Destructor
     ~Window();
-
     Window(const Window&) = delete;
     Window& operator=(const Window&) = delete; 
     Window(Window&&) = delete;
     Window& operator=(Window&&) = delete; 
-
     
-    // member functions
+
+    /*** Member Functions ***/ 
     GLFWwindow* getWindowContext() { return window; }
     void swapBuffer() { glfwSwapBuffers(window); }
     bool shouldClose() { return glfwWindowShouldClose(window); }
     void setClose() { glfwSetWindowShouldClose(window, GLFW_TRUE); }
     
-        // input map
+    // input map
     int addInput(const std::vector<GLFWinput>& input);
     int removeInput(const std::vector<GLFWinput>& input);
     void clearInputs();
     static void clearMouseButtons();
     static void clearMouseScroll() { mouse.yscrolloffset = 0; }
 
-        // cursor options
+    // cursor options
     void setDisabledCursor() { glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED); }
     void setNormalCursor()   { glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL); }
 
@@ -60,14 +58,14 @@ public:
     void processMouse();
     
     // getter functions
-    GLFWinput getKeyState(GLFWinput i) { return glfwGetKey(window, i); } //used for continuous pressing
+    GLFWinput getKeyState(GLFWinput i)                      { return glfwGetKey(window, i); } //used for continuous pressing
     const std::unordered_map<GLFWinput, int>& getInputMap() { return inputMap; } //used for singular press
-    int getModifiers() { return Window::inputModifiersEvent; } 
-    const Mouse& getMouse() { return mouse; }
-    bool isFocused() { return isFocus; }
+    int getModifiers()                                      { return inputModifiersEvent; } 
+    const Mouse& getMouse()                                 { return mouse; }
+    bool isFocused()                                        { return isFocus; }
     
 private:
-    //static functions for callbacks
+    /*** Static functions for callbacks ***/ 
     // window size callback
     static void framebufferSizeCallback(GLFWwindow* window, int width, int height);
     //keyboard callbacks
@@ -77,10 +75,10 @@ private:
     static void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
     static void mouseScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 
+    /*** Data Members ***/ 
     bool isFocus = false;
     static int inputModifiersEvent;
-    // better for larger datasets but worse cache locality
-    static std::unordered_map<GLFWinput, int> inputMap;
+    static std::unordered_map<GLFWinput, int> inputMap; // better for larger datasets but worse cache locality
     GLFWwindow *window;
     static Mouse mouse;
 };

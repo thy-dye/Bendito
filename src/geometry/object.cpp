@@ -6,7 +6,7 @@ Object::Object()
 : topoMesh{nullptr}, gpuMesh{nullptr}, mat{nullptr}, ID{++s_ID} {
     //figure out pos rotation and scale later
 }
-Object::Object(std::unique_ptr<HalfEdgeStructure>& tm, std::shared_ptr<Material>& m)
+Object::Object(std::unique_ptr<HalfEdgeMesh>& tm, std::shared_ptr<Material>& m)
 : topoMesh{std::move(tm)}, gpuMesh{std::move(topoMesh.toGpuMesh())}, mat{m}, ID{++s_ID} {
     
 }

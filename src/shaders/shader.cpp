@@ -1,4 +1,7 @@
 #include "shader.hpp"
+/****************************************/
+/************ Shader Class **************/
+/****************************************/
 
 // Constructors
 Shader::Shader() {}
@@ -190,3 +193,12 @@ void Shader::createShader()
     if (geoFile.is_open())  { glDeleteShader(geometryShader); }
     if (fragFile.is_open()) { glDeleteShader(fragmentShader); }
 }
+/****************************************/
+/************ Texture Class **************/
+/****************************************/
+//todo
+
+/****************************************/
+/*********** Material Class *************/
+/****************************************/
+Material::Material(std::shared_ptr<Shader> s) :s(s) {} 

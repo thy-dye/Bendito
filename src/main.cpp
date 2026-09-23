@@ -1,6 +1,6 @@
 #include "window/window.hpp"
 #include "shaders/shader.hpp"
-#include "renderloop/rendercontext.hpp"
+#include "application/application.hpp"
 #include <string>
 #include <memory>
 #include "geometry/object.hpp"
@@ -14,7 +14,10 @@ int main()
 {
     Window w{WIDTH, HEIGHT, MAJOR, MINOR};
     Camera c{glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f)};
-    RenderContext RomanCancel{w, c};
+    Application RomanCancel{w, c};
+
+    // example cube for halfedge mesh test
+    
 
     // shader creation
     std::string Path{SHADER_PATH};
@@ -23,7 +26,7 @@ int main()
     std::string frag{Path + "main.frag"};
     Shader s(vert.c_str(), frag.c_str());
     
-    Object o = std::make_unique<Object>();
+    auto o = std::make_unique<Object>();
 
     RomanCancel.addObject(o);
     RomanCancel.renderLoop();
