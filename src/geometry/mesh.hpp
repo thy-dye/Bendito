@@ -11,6 +11,7 @@
 struct Vertex {
   glm::vec3 Position;
   glm::vec3 Normal;
+  glm::vec2 UV;
 };
 
 // must have >3 indices
@@ -18,9 +19,10 @@ struct Face {
   std::vector<uint32_t> indices;
 };
 
-/*
- Used to translate the mesh to the GPU
-*/
+/****************************************/
+/************ GPUmesh Class *************/
+/****************************************/
+
 class GpuMesh {
 public:
   std::vector<Vertex> vertices;
@@ -36,6 +38,10 @@ private:
 
 };
 
+
+/****************************************/
+/********** HalfEdgeMesh Class **********/
+/****************************************/
 
 //halfedge stuff
 // requirements manifold and non orientable
@@ -90,6 +96,7 @@ public:
   std::unique_ptr<GpuMesh> toGpuMesh();
 
 private:
+  bool generateMesh(std::vector<Vertex>& vertices, std::vector<Face>& faces);
   uint32_t vertID;
   uint32_t edgeID;
   uint32_t faceID;

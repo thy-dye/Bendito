@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.10.0)
 project(Bendito VERSION 0.1.0 LANGUAGES C CXX)
 
+# add assimp when you implement it in the modelloader
 find_package(glfw3 CONFIG REQUIRED)
 find_package(imgui CONFIG REQUIRED)
 find_package(OpenGL REQUIRED)
@@ -17,6 +18,7 @@ src/error.cpp
 src/shaders/shader.cpp
 src/camera/camera.cpp
 src/geometry/object.cpp
+src/geometry/mesh.cpp
 )
 
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE

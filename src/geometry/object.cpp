@@ -7,7 +7,7 @@ Object::Object()
     //figure out pos rotation and scale later
 }
 Object::Object(std::unique_ptr<HalfEdgeMesh>& tm, std::shared_ptr<Material>& m)
-: topoMesh{std::move(tm)}, gpuMesh{std::move(topoMesh.toGpuMesh())}, mat{m}, ID{++s_ID} {
+: topoMesh{std::move(tm)}, gpuMesh{std::move(topoMesh->toGpuMesh())}, mat{m}, ID{++s_ID} {
     
 }
 Object::Object(std::unique_ptr<GpuMesh>& gm, std::shared_ptr<Material>& m)

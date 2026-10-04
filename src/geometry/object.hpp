@@ -6,14 +6,13 @@
 #include "../shaders/shader.hpp"
 #include "../all.hpp"
 
+// reminder that the order is T * R * S
 struct Transform
 {
     //local space information
     glm::vec3 pos = {0.0f, 0.0f, 0.0f};
     glm::quat rotation = {0.0f, 0.0f, 0.0f, 0.0f};
     glm::vec3 scale = {1.0f, 1.0f, 1.0f};
-    //global space information
-    glm::mat4 modelMatrix = glm::mat4(1.0f);
 };
 
 class Object {
