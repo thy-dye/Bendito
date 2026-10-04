@@ -92,10 +92,11 @@ bool HalfEdgeMesh::generateMesh(std::vector<Vertex>& vertices, std::vector<Face>
             }
             currVert = v; 
 
-            // if not the first vertex - make a halfedge and store it
+            // if not the first vertex - make a halfedge and store it + connect vert to it
             if (prevVert != nullptr) {
-                HalfEdge* he = &halfedges.emplace_back(nullptr, nullptr, nullptr,
+                HalfEdge* he = &this->halfedges.emplace_back(nullptr, nullptr, nullptr,
                                                        nullptr, prevVert, f);
+                currVert->halfedge = he;
                 edges[std::make_pair(prevVert->ID, currVert->ID)] = he;
             }
             prevVert = currVert;
@@ -126,12 +127,16 @@ bool HalfEdgeMesh::generateMesh(std::vector<Vertex>& vertices, std::vector<Face>
                     currHE->twin = edges[std::make_pair(currVert->ID, prevVert->ID)];
                     edges[std::make_pair(currVert->ID, prevVert->ID)]->twin = currHE;
                 }
+                else { // else generate edge and connect to halfedge
+                    HE_Edge* e = &this->edges.emplace_back(currHE, 0.0f, 0, edgeID);
+                    edgeRef[edgeID++] = e;
+                    currHE->edge = e;
+                }
                 prevHE = currHE;
             }
-            
             prevVert = currVert;
-            
         }
+        f->halfedge = currHE;
 
     } 
 }
