@@ -1,6 +1,7 @@
 #include "mesh.hpp"
 #include <unordered_map>
 
+
 /****************************************/
 /************ GPUmesh Class *************/
 /****************************************/
@@ -53,15 +54,17 @@ HalfEdgeMesh::HalfEdgeMesh(std::vector<Vertex>& vertices, std::vector<Face>& fac
 
 std::unique_ptr<GpuMesh> HalfEdgeMesh::toGpuMesh()
 {
-
+    return nullptr;
 }
 
 // i alone am the spinning one https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExYXJ5c2h6a2RjdXprNDQ1eXo0bzd6aWtzZXVvbTM4YTNsNDhhdzhoZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/aU5EJyo9jP7RMvDrV9/giphy.gif
 // supports orientable, non-closed 2-manifold objects
+// no error checking
+// comes from here https://stackoverflow.com/questions/15365471/initializing-half-edge-data-structure-from-vertices
 bool HalfEdgeMesh::generateMesh(std::vector<Vertex>& vertices, std::vector<Face>& faces) {
 
     // used for constructing cyclic nature of halfedge along with twins
-    std::unordered_map<std::pair<uint32_t, uint32_t>, HalfEdge*> edges;
+    std::unordered_map<std::pair<uint32_t, uint32_t>, HalfEdge*, HE::EdgeHasher> UUIDs_to_Edges; // need custom hash pair
     // used to reference Vertex vertices with HE_Vertex vertices
     std::unordered_map<uint32_t, uint32_t> V_to_HEV;            
 
@@ -72,13 +75,13 @@ bool HalfEdgeMesh::generateMesh(std::vector<Vertex>& vertices, std::vector<Face>
         faceRef[faceID++] = f;
 
         // get all vertices of a Face and turn it into a list of edges
-        size_t numVerts = face.indices.size();
+        int numVerts = face.indices.size();
 
         // first loop over edges
         HE_Vertex* prevVert = nullptr;
         HE_Vertex* currVert = nullptr;
         HE_Vertex* v;
-        for (int i = 0; i < numVerts; ++i) // loop creates vertices and halfedges
+        for (int i = 0; i <= numVerts; ++i) // loop creates vertices and halfedges
         {
             // create Vertex and add to the map or get it's reference
             int vertIdx = face.indices[i % numVerts];
@@ -97,7 +100,7 @@ bool HalfEdgeMesh::generateMesh(std::vector<Vertex>& vertices, std::vector<Face>
                 HalfEdge* he = &this->halfedges.emplace_back(nullptr, nullptr, nullptr,
                                                        nullptr, prevVert, f);
                 currVert->halfedge = he;
-                edges[std::make_pair(prevVert->ID, currVert->ID)] = he;
+                UUIDs_to_Edges[std::make_pair(prevVert->ID, currVert->ID)] = he;
             }
             prevVert = currVert;
         }
@@ -105,10 +108,11 @@ bool HalfEdgeMesh::generateMesh(std::vector<Vertex>& vertices, std::vector<Face>
         // second loop over edges
         prevVert = nullptr;
         currVert = nullptr;
-        auto fstEdge = std::make_pair(vertRef[V_to_HEV[0]]->ID, vertRef[V_to_HEV[numVerts - 1]]->ID);
-        HalfEdge* prevHE = edges[fstEdge];
+        auto fstEdge = std::make_pair(vertRef[V_to_HEV[face.indices[numVerts - 1]]]->ID, 
+                                      vertRef[V_to_HEV[face.indices[0]]]->ID);
+        HalfEdge* prevHE = UUIDs_to_Edges[fstEdge];
         HalfEdge* currHE = nullptr;
-        for (int i = 0; i < numVerts; ++i) 
+        for (int i = 0; i <= numVerts; ++i) 
         {
             // get vertex reference
             int vertIdx = face.indices[i % numVerts];
@@ -118,17 +122,17 @@ bool HalfEdgeMesh::generateMesh(std::vector<Vertex>& vertices, std::vector<Face>
             // connect edges if not first vert
             if (prevVert != nullptr) {
                 // connect halfedges
-                currHE = edges[std::make_pair(prevVert->ID, currVert->ID)];
+                currHE = UUIDs_to_Edges[std::make_pair(prevVert->ID, currVert->ID)];
                 prevHE->next = currHE;
                 currHE->prev = prevHE;
                 
                 // if opposite halfedge exists connect them as twins
-                if (edges.contains(std::make_pair(currVert->ID, prevVert->ID))) {
-                    currHE->twin = edges[std::make_pair(currVert->ID, prevVert->ID)];
-                    edges[std::make_pair(currVert->ID, prevVert->ID)]->twin = currHE;
+                if (UUIDs_to_Edges.contains(std::make_pair(currVert->ID, prevVert->ID))) {
+                    currHE->twin = UUIDs_to_Edges[std::make_pair(currVert->ID, prevVert->ID)];
+                    UUIDs_to_Edges[std::make_pair(currVert->ID, prevVert->ID)]->twin = currHE;
                 }
                 else { // else generate edge and connect to halfedge
-                    HE_Edge* e = &this->edges.emplace_back(currHE, 0.0f, 0, edgeID);
+                    HE_Edge* e = &this->edges.emplace_back(currHE, 0.0f, edgeID);
                     edgeRef[edgeID++] = e;
                     currHE->edge = e;
                 }
@@ -139,4 +143,39 @@ bool HalfEdgeMesh::generateMesh(std::vector<Vertex>& vertices, std::vector<Face>
         f->halfedge = currHE;
 
     } 
+    return true;
+}
+
+// this will be here to help validate the mesh and is essentially my unit test that it works
+bool HalfEdgeMesh::validateMesh() 
+{
+    for(HEM_face i = faces.begin(); i != faces.end(); ++i) 
+    {
+        //check that all halfedges are cyclical
+    }
+}
+
+/*************ITERATORS for HALFEDGE MESH************/
+// prefix operators
+template <bool Const>
+HalfEdge::template Iterator<Const>& HalfEdge::Iterator<Const>::operator++()
+{
+
+}
+template <bool Const>
+Iterator& HalfEdge::Iterator<Const>::operator--()
+{
+
+}
+
+// postfix operators
+template <bool Const>
+Iterator& HalfEdge::Iterator<Const>::operator++()
+{
+    
+}
+template <bool Const>
+Iterator& HalfEdge::Iterator<Const>::operator--()
+{
+    
 }
